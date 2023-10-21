@@ -1,15 +1,9 @@
-import System.IO
-import System.Environment
+module Parser
+( parse
+) where
 
-data Node =
-    Loop [Node] |
-    Operator Char
+import AbstractSyntaxTree
 
-instance Show Node where
-    show (Loop nodes) = '[' : (foldl (++) "" (map show nodes)) ++ "]"
-    show (Operator c) = [c]
-    
-type Program = [Node]
 
 validChars :: String
 validChars =  "+-<>,.[]"
@@ -52,26 +46,18 @@ parseLoop str = ((Loop nodes), rest)
                 (restOfLoop, restOfInput) = parseLoop' afterFirstChar
 
 
-parse :: String -> Program
-parse "" = []
-parse str = node : restOfProgram
+parseClean :: String -> Program
+parseClean "" = []
+parseClean str = node : restOfProgram
     where
         (node, afterFirstChar) = parseChar str
-        restOfProgram = parse afterFirstChar
+        restOfProgram = parseClean afterFirstChar
 
-astToStr :: Program -> String
-astToStr program = foldl (++) "" (map show program)
-
-main :: IO ()
-main = do
-    args <- getArgs
-    contents <- readFile (head args)
-
-    let allLines = lines contents
+parse :: String -> Program
+parse str =
+    let allLines   = lines str
         noComments = dropComments allLines
-        bfChars = dropNonBfChars noComments
-        flattened = foldl (++) "" bfChars
-        ast = parse flattened
-
-    putStrLn (astToStr ast)
-
+        bfChars    = dropNonBfChars noComments
+        flattened  = foldl (++) "" bfChars
+    in
+        parseClean flattened
