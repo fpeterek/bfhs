@@ -1,12 +1,13 @@
 module AbstractSyntaxTree
 ( Node ( Loop, Operator )
+, getNodes
 , Program
 , astToStr
 ) where
 
 
 data Node =
-    Loop [Node] |
+    Loop { getNodes :: [Node] } |
     Operator Char
 
 instance Show Node where

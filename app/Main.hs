@@ -3,6 +3,7 @@ import System.Environment
 
 import Parser
 import AbstractSyntaxTree
+import Interpreter
 
 
 main :: IO ()
@@ -12,5 +13,5 @@ main = do
     
     let ast = parse contents
 
-    putStrLn (astToStr ast)
+    interpret ast
 
